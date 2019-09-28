@@ -26,3 +26,11 @@ variable "private-subnet-2" {
   type        = string
   default     = "10.0.0.48/28"
 }
+variable "ami_id" {
+description = "AMI ID"
+default = "ami-0cb0e70f44e1a4bb5"
+}
+variable instance_type {
+description = "Instance to be launched"
+default = "t2.micro"
+}
