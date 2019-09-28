@@ -1,38 +1,3 @@
-variable "region" {
-  default = "ap-south-1"
-}
-variable "vpc_poc" {
-  description = "The CIDR block for the VPC. Default value is a valid CIDR and acceptable by AWS and can be overridden also"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-variable "public-subnet-1" {
-  description = "A list of public subnets inside the VPC"
-  type        = string
-  default     = "10.0.0.0/28"
-}
-variable "public-subnet-2" {
-  description = "A list of public subnets inside the VPC"
-  type        = string
-  default     = "10.0.0.16/28"
-}
-variable "private-subnet-1" {
-  description = "A list of public subnets inside the VPC"
-  type        = string
-  default     = "10.0.0.32/28"
-}
-variable "private-subnet-2" {
-  description = "A list of public subnets inside the VPC"
-  type        = string
-  default     = "10.0.0.48/28"
-}
-
-
-
-[root@ip-10-0-0-10 terraform]# ^C
-[root@ip-10-0-0-10 terraform]# ls
-main.tf  terraform.tfstate  terraform.tfstate.backup  var.tf
-[root@ip-10-0-0-10 terraform]# cat main.tf
 provider "aws" {
   region = "${var.region}"
 }
@@ -115,24 +80,14 @@ resource "aws_route" "public-internet-igw-route" {
   gateway_id             = "${aws_internet_gateway.production-igw.id}"
   destination_cidr_block = "0.0.0.0/0"
 }
+resource "aws_instance" "web" {
+  ami           = "ami-0cb0e70f44e1a4bb5"
+  instance_type = "t2.micro"
+  availability_zone = "ap-south-1a"
+  subnet_id = "${aws_subnet.public-subnet-1.id}"
+  monitoring = "false"
 
-resource "aws_eip" "elastic-ip-for-nat-gw" {
-  vpc                       = true
-  associate_with_private_ip = "10.0.0.5"
   tags = {
-    Name = "Production-EIP"
+    Name = "HelloWorld"
   }
-}
-resource "aws_nat_gateway" "nat-gw" {
-  allocation_id = "${aws_eip.elastic-ip-for-nat-gw.id}"
-  subnet_id     = "${aws_subnet.public-subnet-1.id}"
-  tags = {
-    Name = "Production-NAT-GW"
-  }
-  depends_on = ["aws_eip.elastic-ip-for-nat-gw"]
-}
-resource "aws_route" "nat-gw-route" {
-  route_table_id         = "${aws_route_table.private-route-table.id}"
-  nat_gateway_id         = "${aws_nat_gateway.nat-gw.id}"
-  destination_cidr_block = "0.0.0.0/0"
 }
