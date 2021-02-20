@@ -88,6 +88,6 @@ resource "aws_instance" "web" {
   monitoring = "false"
 
   tags = {
-    Name = "HelloWorld"
+    Name = "HelloWorld02202021"
   }
 }
